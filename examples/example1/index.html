@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<title>dryselect example</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="../../dryselect.js"></script>
+</head>
+<body>
+First main example
+
+<div>
+    <div>
+        All <input type="checkbox" id="selectAll">
+    </div>
+    <div>
+        Some <input type="checkbox" id="selectSome">
+    </div>
+    <h3>items</h3>
+    <section class="dryselect_container" data-name="dryselect_example"></section>
+</div>
+
+<script>
+dryselect.create({
+    name: 'dryselect_example',
+    checkboxes: true,
+    values: [
+        {
+            title: 'One', // String or Num
+            value: '1', // string or num or boolean
+            itemClass: '', // string
+            itemID: '' // string
+        },
+        {
+            title: 'Two', // String or Num
+            value: '2', // string or num or boolean
+            itemClass: '', // string
+            itemID: '' // string
+        }
+     ],
+});
+
+$(function() {
+ 
+    $('#selectAll').on('change', function( event ) {
+
+        var self = this;
+        var target = $(event.target);
+        var checked = target.prop('checked');
+
+        if ( checked ) {
+            dryselect.select({
+                name: 'dryselect_example',
+                values: 'all'
+            });
+        } else {
+            dryselect.select({
+                name: 'dryselect_example',
+                values: 'none'
+            });
+        }
+    });
+
+
+    // Showing the ability to select only specified values
+    $('#selectSome').on('change', function( event ) {
+
+        var self = this;
+        var target = $(event.target);
+        var checked = target.prop('checked');
+
+        dryselect.select({
+            name: 'dryselect_example',
+            values: ['1']
+        });
+    });
+});
+</script>
+</body>
