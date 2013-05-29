@@ -31,6 +31,39 @@
             // Update the selectable values to the new DOM
             newValues = self.newSelectDOM();
             userSettings.element.append( '<ul>' + newValues + '</ul>' );
+
+            self.enableSelection( args.name );
+        },
+
+        count: function( args ) {
+            var dryselectContainer = $('#' + args.name + '_container');
+            var selectOptions = dryselectContainer.find('li.selected');
+            var count = 0;
+            var i = 0;
+
+            for ( i = 0; i < selectOptions.length; i++ ) {
+                count++;
+            }
+
+            return count;
+        },
+
+        enableSelection: function( name ) {
+            var dryselectContainer = $('#' + name + '_container');
+            var selectOptions = dryselectContainer.find('li');
+
+            selectOptions.off('click');
+            selectOptions.on('click', function() {
+                var checked = $(this).find('input[type="checkbox"]').prop('checked');
+
+                $(this).toggleClass('selected');
+
+                if ( checked ) {
+                    $(this).find('input[type="checkbox"]').prop('checked', false);
+                } else {
+                    $(this).find('input[type="checkbox"]').prop('checked', true);
+                }
+            });
         },
 
         newSelectDOM: function() {
@@ -76,7 +109,7 @@
                     $.each(selectOptions, function(key, value) {
                         if ( $(value).attr('data-value') === args.values[key] ) {
                             $(value).addClass('selected');
-                            $(value).find('input[type="checkbox"]').prop('checked', false);
+                            $(value).find('input[type="checkbox"]').prop('checked', true);
                         }
                     });
                 }

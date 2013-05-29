@@ -73,6 +73,19 @@ $(function() {
             values: ['1']
         });
     });
+
+    $('#dryselect_example_container input[type="checkbox"]').on('change', function( event ) {
+
+        var self = this;
+        var target = $(event.target);
+        var checked = target.prop('checked');
+
+        console.log(
+            dryselect.count({
+                name: 'dryselect_example'
+            })
+        );
+    });
 });
 </script>
 </body>
