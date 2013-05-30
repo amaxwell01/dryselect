@@ -18,6 +18,7 @@
         create: function( args ) {
             var self = this;
             var newValues;
+            var listItems;
 
             if ( args ) {
                 userSettings = args;
@@ -29,8 +30,10 @@
             }
 
             // Update the selectable values to the new DOM
-            newValues = self.newSelectDOM();
-            userSettings.element.append( '<ul>' + newValues + '</ul>' );
+            listItems = self.newSelectDOM();
+            newValues = '<ol class="dryselect_list_container">' + listItems + '</ol>';
+
+            userSettings.element.append( newValues );
 
             self.enableSelection( args.name );
         },
@@ -51,17 +54,31 @@
         enableSelection: function( name ) {
             var dryselectContainer = $('#' + name + '_container');
             var selectOptions = dryselectContainer.find('li');
+            var selectOptionsCheckbox = dryselectContainer.find('li').find('input[type="checkbox"]');
 
             selectOptions.off('click');
             selectOptions.on('click', function() {
                 var checked = $(this).find('input[type="checkbox"]').prop('checked');
 
-                $(this).toggleClass('selected');
-
                 if ( checked ) {
+                    $(this).removeClass('selected');
                     $(this).find('input[type="checkbox"]').prop('checked', false);
                 } else {
+                    $(this).addClass('selected');
                     $(this).find('input[type="checkbox"]').prop('checked', true);
+                }
+            });
+
+            selectOptionsCheckbox.off('click');
+            selectOptionsCheckbox.on('click', function() {
+                var checked = $(this).prop('checked');
+
+                if ( checked ) {
+                    $(this).parents('li').removeClass('selected');
+                    $(this).prop('checked', false);
+                } else {
+                    $(this).parents('li').addClass('selected');
+                    $(this).prop('checked', true);
                 }
             });
         },
