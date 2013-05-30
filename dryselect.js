@@ -83,6 +83,47 @@
             });
         },
 
+        // Get the values, both selected and non-selected in an object
+        get: function(args) {
+            var dryselectContainer = $('#' + args.name + '_container');
+            var selectOptions = dryselectContainer.find('li');
+            var items = {
+                selected: [],
+                non_selected: [],
+                all: []
+            };
+            var item;
+
+            // Loop over all of the items, and store it into the items object
+            $.each(selectOptions, function(key, value) {
+                item = $(value);
+
+                if ( item.hasClass('selected') ) {
+                    items.all.push({
+                        selected: true,
+                        title: item.text(),
+                        value: item.attr('data-value')
+                    });
+                    items.selected.push({
+                        value: item.attr('data-value'),
+                        title: item.text()
+                    });
+                } else {
+                    items.all.push({
+                        selected: false,
+                        title: item.text(),
+                        value: item.attr('data-value')
+                    });
+                    items.non_selected.push({
+                        value: item.attr('data-value'),
+                        title: item.text()
+                    });
+                }
+            });
+
+            return items;
+        },
+
         newSelectDOM: function() {
             var newValues = '';
             var checkbox = '';
@@ -93,7 +134,7 @@
                         checkbox = '<input type="checkbox" name="' + value.title + '" value="' + value.value + '"">';
                     }
 
-                    newValues += '<li class="' + value.itemClass + '" id="' + value.itemID + '" data-value="' + value.value + '">' + checkbox + '<span>' + value.title + '</span></li>';
+                    newValues += '<li class="' + value.itemClass + '" id="' + value.itemID + '" data-value="' + value.value + '">' + checkbox + '<span class="title">' + value.title + '</span></li>';
                 });
             } else {
                 // take the child contents and turn that into the new DOM
@@ -132,6 +173,43 @@
                 }
             } else {
                 console.log( 'no values specified' );
+            }
+        },
+
+        set: function(args) {
+            var self = this;
+            var dryselectContainer = $('#' + args.name + '_container');
+            var selectOptions = dryselectContainer.find('li');
+            var item;
+
+            var updateListItem = function( itemValue, newItemTitle, newItemValue ) {
+
+                // Loop over the items, and only change what's needed
+                if ( itemValue && newItemTitle ) {
+                    $.each(selectOptions, function(key, value) {
+                        item = $(value);
+
+                        if ( item.attr('data-value') === itemValue ) {
+
+                            // Update the title value with the new title value
+                            item.find('input[type="checkbox"]').attr( 'name', newItemTitle );
+                            item.find('.title').text( newItemTitle );
+
+                            if ( newItemValue ) {
+                                item.find('input[type="checkbox"]').val( newItemValue );
+                                item.attr('data-value', newItemValue);
+                            }
+                        }
+                    });
+                }
+            };
+
+            if ( args.values && Array.isArray(args.values) ) {
+
+                // Loop over the items, and only change what's needed
+                $.each(args.values, function(key, value) {
+                    updateListItem( value.value.toString(), value.title, value.newValue );
+                });
             }
         }
     };

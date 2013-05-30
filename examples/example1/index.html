@@ -83,6 +83,7 @@ $(function() {
         }
     });
 
+    // Get the selected count
     // setInterval(function() {
     //     console.log(
     //         dryselect.count({
@@ -90,6 +91,23 @@ $(function() {
     //         })
     //     );
     // },3000);
+
+    // Get the selected values for "selected, non-selected and all"
+    // setInterval(function() {
+    //     var total = dryselect.get({ name: 'dryselect_example' });
+    //     console.log( total );
+    // },3000);
+
+    dryselect.set({
+        name: 'dryselect_example',
+        values: [
+            {
+                value: 1,
+                title: 'One Hundred',
+                newValue: 100
+            }
+        ]
+    });
 });
 </script>
 </body>
