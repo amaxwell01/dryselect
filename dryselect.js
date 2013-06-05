@@ -25,8 +25,8 @@
             }
 
             if ( userSettings.name ) {
-                userSettings.element = $('[data-name="' + args.name + '"]');
-                userSettings.element.attr('id', (args.name + '_container') );
+                userSettings.element = $('[data-name="' + userSettings.name + '"]');
+                userSettings.element.attr('id', (userSettings.name + '_container') );
             }
 
             // Update the selectable values to the new DOM
@@ -51,36 +51,38 @@
             return count;
         },
 
-        enableSelection: function( name ) {
-            var dryselectContainer = $('#' + name + '_container');
-            var selectOptions = dryselectContainer.find('li');
-            var selectOptionsCheckbox = dryselectContainer.find('li').find('input[type="checkbox"]');
+        enableSelection: function() {
+            var selectOptions = userSettings.element.find('li');
+            var selectOptionsCheckbox = userSettings.element.find('li').find('input[type="checkbox"]');
 
             selectOptions.off('click');
-            selectOptions.on('click', function() {
-                var checked = $(this).find('input[type="checkbox"]').prop('checked');
 
-                if ( checked ) {
-                    $(this).removeClass('selected');
-                    $(this).find('input[type="checkbox"]').prop('checked', false);
-                } else {
-                    $(this).addClass('selected');
-                    $(this).find('input[type="checkbox"]').prop('checked', true);
-                }
-            });
+            if ( !userSettings.disabled ) {
+                selectOptions.on('click', function() {
+                    var checked = $(this).find('input[type="checkbox"]').prop('checked');
 
-            selectOptionsCheckbox.off('click');
-            selectOptionsCheckbox.on('click', function() {
-                var checked = $(this).prop('checked');
+                    if ( checked ) {
+                        $(this).removeClass('selected');
+                        $(this).find('input[type="checkbox"]').prop('checked', false);
+                    } else {
+                        $(this).addClass('selected');
+                        $(this).find('input[type="checkbox"]').prop('checked', true);
+                    }
+                });
 
-                if ( checked ) {
-                    $(this).parents('li').removeClass('selected');
-                    $(this).prop('checked', false);
-                } else {
-                    $(this).parents('li').addClass('selected');
-                    $(this).prop('checked', true);
-                }
-            });
+                selectOptionsCheckbox.off('click');
+                selectOptionsCheckbox.on('click', function() {
+                    var checked = $(this).prop('checked');
+
+                    if ( checked ) {
+                        $(this).parents('li').removeClass('selected');
+                        $(this).prop('checked', false);
+                    } else {
+                        $(this).parents('li').addClass('selected');
+                        $(this).prop('checked', true);
+                    }
+                });
+            }
         },
 
         // Get the values, both selected and non-selected in an object
