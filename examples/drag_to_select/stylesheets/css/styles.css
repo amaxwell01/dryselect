@@ -10,9 +10,18 @@
   padding: 0; }
   .dryselect_list_container li {
     background: #FFF;
-    padding: 10px; }
+    cursor: pointer;
+    padding: 10px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
     .dryselect_list_container li.selected {
       background: #f2f5f4; }
+    .dryselect_list_container li.disabled {
+      cursor: default; }
     .dryselect_list_container li input[type="checkbox"] {
       display: block;
       float: left;

@@ -37,6 +37,9 @@
 
             userSettings.element.append( newValues );
             self.enableSelection( userSettings.name );
+
+            // @TODO needs more work and thought
+            //self.getSelectionCoords();
         },
 
         // Store all models in the collection
@@ -140,8 +143,10 @@
 
         getSelectionCoords: function() {
             var selection = document.selection, range;
+            var selectionCoords;
             var x = 0;
             var y = 0;
+
             if (selection) {
                 if (selection.type != 'Control') {
                     range = selection.createRange();
@@ -161,7 +166,11 @@
                     }
                 }
             }
-            return { x: x, y: y };
+
+            selectionCoords = { x: x, y: y };
+            console.log( selectionCoords );
+
+            return selectionCoords;
         },
 
         newSelectDOM: function() {
