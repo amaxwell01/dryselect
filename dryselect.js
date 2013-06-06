@@ -1,7 +1,8 @@
 (function(window, document, $, undefine) {
 
     var defaultSettings = {
-        checkbox: '<input type=checkbox />'
+        checkbox: '<input type=checkbox />',
+        enabled: true
     };
 
     var userSettings;
@@ -21,12 +22,13 @@
             var listItems;
 
             if ( args ) {
-                userSettings = args;
+                userSettings = $.extend(defaultSettings, args);
             }
 
             if ( userSettings.name ) {
                 userSettings.element = $('[data-name="' + userSettings.name + '"]');
                 userSettings.element.attr('id', (userSettings.name + '_container') );
+                self.collection[ userSettings.name ] = userSettings;
             }
 
             // Update the selectable values to the new DOM
@@ -34,9 +36,11 @@
             newValues = '<ol class="dryselect_list_container">' + listItems + '</ol>';
 
             userSettings.element.append( newValues );
-
-            self.enableSelection( args.name );
+            self.enableSelection( userSettings.name );
         },
+
+        // Store all models in the collection
+        collection: {},
 
         count: function( args ) {
             var dryselectContainer = $('#' + args.name + '_container');
@@ -51,13 +55,17 @@
             return count;
         },
 
-        enableSelection: function() {
-            var selectOptions = userSettings.element.find('li');
-            var selectOptionsCheckbox = userSettings.element.find('li').find('input[type="checkbox"]');
+        enableSelection: function( name ) {
+            var currentCollection = dryselect.collection[ name ];
+            var selectOptions = currentCollection.element.find('li');
+            var selectOptionsCheckbox = currentCollection.element.find('li').find('input[type="checkbox"]');
 
             selectOptions.off('click');
+            selectOptionsCheckbox.off('click');
 
-            if ( !userSettings.disabled ) {
+            if ( currentCollection.enabled ) {
+                selectOptions.removeClass('disabled');
+                selectOptionsCheckbox.prop('disabled', false);
                 selectOptions.on('click', function() {
                     var checked = $(this).find('input[type="checkbox"]').prop('checked');
 
@@ -70,7 +78,6 @@
                     }
                 });
 
-                selectOptionsCheckbox.off('click');
                 selectOptionsCheckbox.on('click', function() {
                     var checked = $(this).prop('checked');
 
@@ -82,12 +89,17 @@
                         $(this).prop('checked', true);
                     }
                 });
+            } else {
+                selectOptions.addClass('disabled');
+                selectOptionsCheckbox.prop('disabled', true);
             }
         },
 
         // Get the values, both selected and non-selected in an object
         get: function(args) {
-            var dryselectContainer = $('#' + args.name + '_container');
+            $.extend(true, dryselect.collection[ args.name ], args);
+            var currentCollection = dryselect.collection[ args.name ];
+            var dryselectContainer = currentCollection.element;
             var selectOptions = dryselectContainer.find('li');
             var items = {
                 selected: [],
@@ -124,6 +136,32 @@
             });
 
             return items;
+        },
+
+        getSelectionCoords: function() {
+            var selection = document.selection, range;
+            var x = 0;
+            var y = 0;
+            if (selection) {
+                if (selection.type != 'Control') {
+                    range = selection.createRange();
+                    range.collapse(true);
+                    x = range.boundingLeft;
+                    y = range.boundingTop;
+                }
+            } else if (window.getSelection) {
+                selection = window.getSelection();
+                if (selection.rangeCount) {
+                    range = sel.getRangeAt(0).cloneRange();
+                    if (range.getClientRects) {
+                        range.collapse(true);
+                        var rect = range.getClientRects()[0];
+                        x = rect.left;
+                        y = rect.top;
+                    }
+                }
+            }
+            return { x: x, y: y };
         },
 
         newSelectDOM: function() {
@@ -180,7 +218,10 @@
 
         set: function(args) {
             var self = this;
-            var dryselectContainer = $('#' + args.name + '_container');
+            //var dryselectContainer = $('#' + args.name + '_container');
+            $.extend(true, dryselect.collection[ args.name ], args);
+            var currentCollection = dryselect.collection[ args.name ];
+            var dryselectContainer = currentCollection.element;
             var selectOptions = dryselectContainer.find('li');
             var item;
 
@@ -206,10 +247,12 @@
                 }
             };
 
-            if ( args.values && Array.isArray(args.values) ) {
+            self.enableSelection( currentCollection.name );
+
+            if ( currentCollection.values && Array.isArray(currentCollection.values) ) {
 
                 // Loop over the items, and only change what's needed
-                $.each(args.values, function(key, value) {
+                $.each(currentCollection.values, function(key, value) {
                     updateListItem( value.value.toString(), value.title, value.newValue );
                 });
             }
