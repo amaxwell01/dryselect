@@ -1,0 +1,43 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+.dryselect_container {
+    border: solid 1px #EEE;
+}
+
+.dryselect_list_container {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    
+    li {
+        background: #FFF;
+        cursor: pointer;
+        padding: 10px;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        &.selected {
+            background: #f2f5f4;
+        }
+
+        &.disabled {
+            cursor: default;
+        }
+
+        input[type="checkbox"] {
+            display: block;
+            float: left;
+            margin: 5px 10px 0 0;
+        }
+
+        &:hover {
+            background: #fafafb;
+        }
+    }
+}

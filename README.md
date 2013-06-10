@@ -25,6 +25,28 @@ dryselect.create({
         }
      ]
 });
+
+dryselect.create({
+    name: 'dryselect_example',
+    valueMapping: {
+        value: 'date', // String of the setting you want it mapped to
+        title: ''  // String of the setting you want it mapped to
+    },
+    values: [
+        {
+            title: 'One', // String or Num
+            value: '1', // string or num or boolean
+            itemClass: '', // string
+            itemID: '' // string
+        },
+        {
+            title: 'Two', // String or Num
+            value: '2', // string or num or boolean
+            itemClass: '', // string
+            itemID: '' // string
+        }
+     ]
+});
 ```
 
 Selected all, none or specific values

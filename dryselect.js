@@ -1,10 +1,5 @@
 (function(window, document, $, undefine) {
 
-    var defaultSettings = {
-        checkbox: '<input type=checkbox />',
-        enabled: true
-    };
-
     var userSettings;
 
     // Safety net for browsers that don't support Array.isArray()
@@ -21,18 +16,23 @@
             var newValues;
             var listItems;
 
+            var defaultSettings = {
+                checkbox: '<input type=checkbox />',
+                enabled: true
+            };
+
             if ( args ) {
                 userSettings = $.extend(defaultSettings, args);
             }
 
             if ( userSettings.name ) {
-                userSettings.element = $('[data-name="' + userSettings.name + '"]');
+                userSettings.element = $('[data-dryname="' + userSettings.name + '"]');
                 userSettings.element.attr('id', (userSettings.name + '_container') );
                 self.collection[ userSettings.name ] = userSettings;
             }
 
             // Update the selectable values to the new DOM
-            listItems = self.newSelectDOM();
+            listItems = self.newSelectDOM( userSettings.name );
             newValues = '<ol class="dryselect_list_container">' + listItems + '</ol>';
 
             userSettings.element.append( newValues );
@@ -173,17 +173,29 @@
             return selectionCoords;
         },
 
-        newSelectDOM: function() {
+        newSelectDOM: function( name ) {
+            var currentCollection = dryselect.collection[ name ];
             var newValues = '';
             var checkbox = '';
+            var itemValue;
+            var itemTitle;
 
-            if ( userSettings.values ) {
-                $.each( userSettings.values, function(key, value) {
-                    if ( userSettings.checkboxes ) {
-                        checkbox = '<input type="checkbox" name="' + value.title + '" value="' + value.value + '"">';
+            if ( currentCollection.values ) {
+                $.each( currentCollection.values, function(key, value) {
+
+                    if ( currentCollection.valueMapping ) {
+                        itemValue = value[ currentCollection.valueMapping.value ];
+                        itemTitle = value[ currentCollection.valueMapping.title ];
+                    } else {
+                        itemValue = value.value;
+                        itemTitle = value.title;
                     }
 
-                    newValues += '<li class="' + value.itemClass + '" id="' + value.itemID + '" data-value="' + value.value + '">' + checkbox + '<span class="title">' + value.title + '</span></li>';
+                    if ( currentCollection.checkboxes ) {
+                        checkbox = '<input type="checkbox" name="' + itemTitle + '" value="' + itemValue + '">';
+                    }
+
+                    newValues += '<li class="' + value.itemClass + '" id="' + value.itemID + '" data-value="' + itemValue + '">' + checkbox + '<span class="title">' + itemTitle + '</span></li>';
                 });
             } else {
                 // take the child contents and turn that into the new DOM
@@ -196,6 +208,15 @@
         select: function( args ) {
             var dryselectContainer = $('#' + args.name + '_container');
             var selectOptions = dryselectContainer.find('li');
+
+            var checkMatch = function(key, value) {
+                $.each( args.values, function(newKey, newValue) {
+                    if ( $(value).attr('data-value') === newValue ) {
+                        $(value).addClass('selected');
+                        $(value).find('input[type="checkbox"]').prop('checked', true);
+                    }
+                });
+            };
 
             if ( args.values ) {
                 if ( args.values === 'all' ) {
@@ -214,10 +235,7 @@
                 else
                 if ( Array.isArray(args.values) ) {
                     $.each(selectOptions, function(key, value) {
-                        if ( $(value).attr('data-value') === args.values[key] ) {
-                            $(value).addClass('selected');
-                            $(value).find('input[type="checkbox"]').prop('checked', true);
-                        }
+                        checkMatch(key, value);
                     });
                 }
             } else {
@@ -233,6 +251,8 @@
             var dryselectContainer = currentCollection.element;
             var selectOptions = dryselectContainer.find('li');
             var item;
+            var itemValue;
+            var itemTitle;
 
             var updateListItem = function( itemValue, newItemTitle, newItemValue ) {
 
@@ -262,7 +282,15 @@
 
                 // Loop over the items, and only change what's needed
                 $.each(currentCollection.values, function(key, value) {
-                    updateListItem( value.value.toString(), value.title, value.newValue );
+                    if ( currentCollection.valueMapping ) {
+                        itemValue = value[ currentCollection.valueMapping.value ];
+                        itemTitle = value[ currentCollection.valueMapping.title ];
+                    } else {
+                        itemValue = value.value;
+                        itemTitle = value.title;
+                    }
+
+                    updateListItem( itemValue.toString(), itemTitle, value.newValue );
                 });
             }
         }
