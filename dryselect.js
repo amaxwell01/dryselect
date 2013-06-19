@@ -11,6 +11,37 @@
 
     var dryselect = {
 
+        clear: function( args ) {
+            var dryselectContainer = $('#' + args.name + '_container');
+            var selectOptions = dryselectContainer.find('li');
+
+            var checkMatch = function(key, value) {
+                $.each( args.values, function(newKey, newValue) {
+                    if ( $(value).attr('data-value') === newValue ) {
+                        $(value).removeClass('selected');
+                        $(value).find('input[type="checkbox"]').prop('checked', false);
+                    }
+                });
+            };
+
+            if ( args.values ) {
+                if ( args.values === 'all' ) {
+                    $.each(selectOptions, function(key, value) {
+                        $(value).removeClass('selected');
+                        $(value).find('input[type="checkbox"]').prop('checked', false);
+                    });
+                }
+                else
+                if ( Array.isArray(args.values) ) {
+                    $.each(selectOptions, function(key, value) {
+                        checkMatch(key, value);
+                    });
+                }
+            } else {
+                console.log( 'no values specified' );
+            }
+        },
+
         create: function( args ) {
             var self = this;
             var newValues;
