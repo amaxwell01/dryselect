@@ -63,35 +63,39 @@
             var selectOptions = currentCollection.element.find('li');
             var selectOptionsCheckbox = currentCollection.element.find('li').find('input[type="checkbox"]');
 
-            selectOptions.off('click');
-            selectOptionsCheckbox.off('click');
+            var selectOptionItem = function() {
+                var checked = $(this).find('input[type="checkbox"]').prop('checked');
+
+                if ( checked ) {
+                    $(this).removeClass('selected');
+                    $(this).find('input[type="checkbox"]').prop('checked', false);
+                } else {
+                    $(this).addClass('selected');
+                    $(this).find('input[type="checkbox"]').prop('checked', true);
+                }
+            };
+
+            var selectOptionCheckbox = function() {
+                var checked = $(this).prop('checked');
+
+                if ( checked ) {
+                    $(this).parents('li').removeClass('selected');
+                    $(this).prop('checked', false);
+                } else {
+                    $(this).parents('li').addClass('selected');
+                    $(this).prop('checked', true);
+                }
+            };
+
+            selectOptions.off('click', selectOptionItem);
+            selectOptionsCheckbox.off('click', selectOptionCheckbox);
 
             if ( currentCollection.enabled ) {
                 selectOptions.removeClass('disabled');
                 selectOptionsCheckbox.prop('disabled', false);
-                selectOptions.on('click', function() {
-                    var checked = $(this).find('input[type="checkbox"]').prop('checked');
+                selectOptions.on('click', selectOptionItem);
 
-                    if ( checked ) {
-                        $(this).removeClass('selected');
-                        $(this).find('input[type="checkbox"]').prop('checked', false);
-                    } else {
-                        $(this).addClass('selected');
-                        $(this).find('input[type="checkbox"]').prop('checked', true);
-                    }
-                });
-
-                selectOptionsCheckbox.on('click', function() {
-                    var checked = $(this).prop('checked');
-
-                    if ( checked ) {
-                        $(this).parents('li').removeClass('selected');
-                        $(this).prop('checked', false);
-                    } else {
-                        $(this).parents('li').addClass('selected');
-                        $(this).prop('checked', true);
-                    }
-                });
+                selectOptionsCheckbox.on('click', selectOptionCheckbox);
             } else {
                 selectOptions.addClass('disabled');
                 selectOptionsCheckbox.prop('disabled', true);
